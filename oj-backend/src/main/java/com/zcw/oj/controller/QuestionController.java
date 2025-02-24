@@ -10,10 +10,7 @@ import com.zcw.oj.common.ResultUtils;
 import com.zcw.oj.constant.UserConstant;
 import com.zcw.oj.exception.BusinessException;
 import com.zcw.oj.exception.ThrowUtils;
-import com.zcw.oj.model.dto.question.QuestionAddRequest;
-import com.zcw.oj.model.dto.question.QuestionEditRequest;
-import com.zcw.oj.model.dto.question.QuestionQueryRequest;
-import com.zcw.oj.model.dto.question.QuestionUpdateRequest;
+import com.zcw.oj.model.dto.question.*;
 import com.zcw.oj.model.entity.Question;
 import com.zcw.oj.model.entity.User;
 import com.zcw.oj.model.vo.QuestionVO;
@@ -55,8 +52,18 @@ public class QuestionController {
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
         List<String> tags = questionAddRequest.getTags();
+        // 设置标签
         if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
+        }
+        // 设置判题用例和配置
+        List<String> judgeCase = questionAddRequest.getJudgeCase();
+        if (judgeCase != null) {
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
+        }
+        JudgeConfig judgeConfig = questionAddRequest.getJudgeConfig();
+        if (judgeConfig != null){
+            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
         }
         // questionService.validQuestion(question, true);
         User loginUser = userService.getLoginUser(request);
@@ -112,6 +119,15 @@ public class QuestionController {
         if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
+        // 设置判题用例和配置
+        List<String> judgeCase = questionUpdateRequest.getJudgeCase();
+        if (judgeCase != null) {
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
+        }
+        JudgeConfig judgeConfig = questionUpdateRequest.getJudgeConfig();
+        if (judgeConfig != null){
+            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
+        }
         // 参数校验
         // questionService.validQuestion(question, false);
         long id = questionUpdateRequest.getId();
@@ -123,7 +139,7 @@ public class QuestionController {
     }
 
     /**
-     * 根据 id 获取
+     * 根据 id 获取题目
      *
      * @param id
      * @return
@@ -211,6 +227,15 @@ public class QuestionController {
         List<String> tags = questionEditRequest.getTags();
         if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
+        }
+        // 设置判题用例和配置
+        List<String> judgeCase = questionEditRequest.getJudgeCase();
+        if (judgeCase != null) {
+            question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
+        }
+        JudgeConfig judgeConfig = questionEditRequest.getJudgeConfig();
+        if (judgeConfig != null){
+            question.setJudgeConfig(JSONUtil.toJsonStr(judgeConfig));
         }
         // 参数校验
         // questionService.validQuestion(question, false);

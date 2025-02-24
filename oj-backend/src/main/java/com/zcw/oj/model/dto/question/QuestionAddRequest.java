@@ -24,7 +24,7 @@ public class QuestionAddRequest implements Serializable {
     private String content;
 
     /**
-     * 标签列表（json 数组）
+     * 标签列表
      */
     private List<String> tags;
 
@@ -34,14 +34,14 @@ public class QuestionAddRequest implements Serializable {
     private String answer;
 
     /**
-     * 判题用例(json列表)
+     * 判题用例
      */
-    private String judgeCase;
+    private List<String> judgeCase;
 
     /**
-     * 判题配置(json对象)
+     * 判题配置
      */
-    private String judgeConfig;
+    private JudgeConfig judgeConfig;
 
     /**
      * 创建用户 id

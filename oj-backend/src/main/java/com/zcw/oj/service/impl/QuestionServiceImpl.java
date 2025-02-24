@@ -1,12 +1,15 @@
 package com.zcw.oj.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zcw.oj.model.dto.question.JudgeConfig;
 import com.zcw.oj.model.dto.question.QuestionQueryRequest;
 import com.zcw.oj.model.entity.Question;
 import com.zcw.oj.model.entity.User;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,12 +84,22 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
     @Override
     public QuestionVO getQuestionVO(Question question, HttpServletRequest request) {
         QuestionVO questionVO = new QuestionVO();
-        BeanUtil.copyProperties(question, questionVO);
+        BeanUtil.copyProperties(question, questionVO, CopyOptions.create().setIgnoreError(true));
+        // 转换标签类型
+        String tagsJson = question.getTags();
+        List<String> tags = JSONUtil.toList(tagsJson, String.class);
+        questionVO.setTags(tags);
+        // 转换判题配置
+        String judgeConfigJson = question.getJudgeConfig();
+        JudgeConfig judgeConfig = JSONUtil.toBean(judgeConfigJson, JudgeConfig.class);
+        questionVO.setJudgeConfig(judgeConfig);
         // 1. 关联绑定用户信息
         Long userId = question.getUserId();
         User user = null;
-        if (userId == null || userId < 0) {
+        if (userId != null && userId > 0) {
             user = userService.getById(userId);
+        }else {
+            return questionVO;
         }
         UserVO userVO = userService.getUserVO(user);
         questionVO.setUserVO(userVO);
@@ -94,6 +108,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
 
     /**
      * 分页对象转换VO
+     *
      * @param questionPage
      * @param request
      * @return
@@ -103,7 +118,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
         List<Question> records = questionPage.getRecords();
         // 创建新的分页对象
         Page<QuestionVO> questionVOPage = new Page<>(questionPage.getCurrent(), questionPage.getSize(), questionPage.getTotal());
-        if (CollUtil.isEmpty(records)){
+        if (CollUtil.isEmpty(records)) {
             return questionVOPage;
         }
         // 1. 关联用户信息

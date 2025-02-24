@@ -1,4 +1,4 @@
-package com.yupi.yuoj.model.enums;
+package com.zcw.oj.model.enums;
 
 import org.apache.commons.lang3.ObjectUtils;
 
