@@ -57,7 +57,7 @@ public class QuestionController {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 设置判题用例和配置
-        List<String> judgeCase = questionAddRequest.getJudgeCase();
+        List<JudgeCase> judgeCase = questionAddRequest.getJudgeCase();
         if (judgeCase != null) {
             question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
         }
@@ -120,7 +120,7 @@ public class QuestionController {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 设置判题用例和配置
-        List<String> judgeCase = questionUpdateRequest.getJudgeCase();
+        List<JudgeCase> judgeCase = questionUpdateRequest.getJudgeCase();
         if (judgeCase != null) {
             question.setJudgeCase(JSONUtil.toJsonStr(judgeCase));
         }
@@ -154,6 +154,25 @@ public class QuestionController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         return ResultUtils.success(questionService.getQuestionVO(question, request));
+    }
+
+    /**
+     * 根据 id 获取题目
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/get")
+    public BaseResponse<Question> getQuestionById(long id, HttpServletRequest request) {
+        if (id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // TODO 权限校验、本人/管理员
+        Question question = questionService.getById(id);
+        if (question == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        return ResultUtils.success(question);
     }
 
     /**

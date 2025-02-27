@@ -59,6 +59,9 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         // 判断编程语言是否合法
         QuestionSubmitLanguageEnum languageEnum = QuestionSubmitLanguageEnum.getEnumByValue(questionSubmitAddRequest.getLanguage());
         ThrowUtils.throwIf(languageEnum == null, ErrorCode.PARAMS_ERROR, "不支持的编程语言");
+        if (StrUtil.isBlank(questionSubmitAddRequest.getCode())){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "代码不能为空");
+        }
         // 判断题目是否存在
         Long questionId = questionSubmitAddRequest.getQuestionId();
         Question question = questionService.getById(questionId);
@@ -70,8 +73,8 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         QuestionSubmit questionSubmit = new QuestionSubmit();
         questionSubmit.setUserId(userId);
         questionSubmit.setQuestionId(questionId);
-        questionSubmit.setLanguage(questionSubmit.getLanguage());
-        questionSubmit.setCode(questionSubmit.getCode());
+        questionSubmit.setLanguage(languageEnum.getValue());
+        questionSubmit.setCode(questionSubmitAddRequest.getCode());
         questionSubmit.setJudgeInfo("{}");
         // 初始状态
         questionSubmit.setStatus(QuestSubmitStatusEnum.WAITING.getValue());
